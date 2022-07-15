@@ -1,0 +1,51 @@
+# import packages
+import pandas as pd
+import numpy as np
+import nltk
+from nltk.corpus import stopwords
+import re
+import unicodedata
+import matplotlib.pyplot as plt
+
+# read in data
+Kanye = pd.read_excel(r'Kanye Lyrics.xlsx')
+
+def basic_clean(text):
+  """
+  A simple function to clean up the data. All the words that
+  are not designated as a stop word is then lemmatized after
+  encoding and basic regex parsing are performed.
+  """
+  wnl = nltk.stem.WordNetLemmatizer()
+  stopwords = nltk.corpus.stopwords.words('english')
+  text = (unicodedata.normalize('NFKD', text)
+    .encode('ascii', 'ignore')
+    .decode('utf-8', 'ignore')
+    .lower())
+  words = re.sub(r'[^\w\s]', '', text).split()
+  return [wnl.lemmatize(word) for word in words if word not in stopwords]
+  
+words = basic_clean(''.join(str(Kanye['Lyrics'].tolist())))
+
+# most popular bigrams
+(pd.Series(nltk.ngrams(words, 2)).value_counts())[:10]
+
+# most popular trigrams
+(pd.Series(nltk.ngrams(words, 3)).value_counts())[:10]
+
+bigrams = (pd.Series(nltk.ngrams(words, 2)).value_counts())
+trigrams = (pd.Series(nltk.ngrams(words, 3)).value_counts())
+quadgrams = (pd.Series(nltk.ngrams(words, 4)).value_counts())
+
+# Print to .csv 
+bigrams.to_csv("kanye bigrams.csv")
+trigrams.to_csv("kanye trigrams.csv")
+quadgrams.to_csv("kanye quadgrams.csv")
+
+bigrams_df = pd.DataFrame(bigrams)
+bigrams_df = bigrams_df.reset_index()
+bigrams_df.columns = ['bigrams', 'frequency']
+
+bigrams_df.head(5)
+
+# End
