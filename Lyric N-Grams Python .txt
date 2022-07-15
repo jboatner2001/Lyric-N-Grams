@@ -4,8 +4,6 @@ import numpy as np
 import nltk
 from nltk.corpus import stopwords
 import re
-import unicodedata
-import matplotlib.pyplot as plt
 
 # read in data
 Kanye = pd.read_excel(r'Kanye Lyrics.xlsx')
